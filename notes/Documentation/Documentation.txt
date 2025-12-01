@@ -1,0 +1,181 @@
+This note is high-level documentation for the core parts of this template project.
+All events in this project are commented, so you can open any event and read the comments to understand what it does, and how it works.
+
+########## OBJECTS ##########
+
+obj_matching_piece is the main object for the matching pieces which the player moves to play the game.
+
+	Create				Sets up some variables the object needs later and runs a script to near-randomly determine the type of piece. Also holds the function that controls how it moves when dragged how to check for matches
+	Destroy				Creates the destruction effect if the piece was destroyed because it matched this turn
+	Step				Here is where we move the piece when it needs to move and animate it
+	Draw				Draws the piece taking into account some variables for animating it and making it squish
+	Drag End			Triggered when the player drags the piece, it handles the logic for swapping pieces
+	
+	
+obj_playfield_parent is the parent of all squares on the match 3 board, obj_playfield_dark and obj_playfield_light are the different color variants.
+You should place obj_playfield_dark and obj_play_field light in a room to make a board in a custom shape.
+
+obj_playfield_parent's events are as follows:
+
+	Create				Calls function triggered at the start of the game and when the board needs to be cleared, it spawns new matching pieces in every playfield square.
+	
+
+obj_controller controls how levels work, allows other objects a central point of reference to communicate with each other and check variables..
+
+Its events are as follows:
+
+	Create				Sets up local and global variables which define how the story will run.
+	Step				Resizes the view in case the user changes the window size. Also checks whether the user has click-and-dragged and swaps pieces
+	Alarm 0				Triggers checks to see if there are empty squares on the board for other pieces to fall into, and to spawn new pieces after a match is made.
+	Alarm 1				Checks if a move has finished processing and resets the turn. Also checks for game overs, victory & if any valid moves are available.
+	Alarm 2				Is involved in processing invalid matches when the user swaps two pieces but they don't create a match.
+	Alarm 3				Triggers function of obj_playfield_parent when the board needs to be repopulated after it has been cleared.
+	Draw				Draws the background.
+
+
+obj_objectives deals with setting up objectives and drawing their HUD elements. You'll notice there is a separate obj_objectives_horizontal, this is only for drawing
+the objective HUD elements when in portrait, with the main logic still being handled by obj_objectives.
+
+It's events are as follows:
+
+	Create
+	Step
+	Draw
+
+
+obj_effect_game_won replaces the remaining matching pieces on the board when the game has been won. It animates the pieces falling from the screen. Its events are:
+
+	Create				Sets up some variables related to the falling animation.
+	Outside Room		Destroys the instance once it falls outside of the visible room boundaries.
+	
+
+obj_effect_matched replaces obj_matching_piece when they are part of a successful matching line of three or more objects. It shows a matching animation.
+
+	Create				Sets animation speed to 0 and sets firework effect matching the color of this piece. This code is delayed because the instance of obj_matching_piece which
+						created it needs to pass it some information about its color which can only occur after the create event of this object has already triggered.
+	Step				Animates the instance and destroys it once the animation is over.
+						
+
+obj_effect_star and obj_effect_star_particle are used to animate the stars on the HUD when the player achieves the correct score in the game. They both have two events, each
+of which are used for the same thing:
+
+	Create				Set up some variables related to animating this object.
+	Step				Animate this object and destroy it when the animation is finished.
+
+
+obj_game_over_button_* are all buttons which show up on the game over screens (victory or defeat) allowing the player to progress the game. They all share the same events
+in common:
+
+	Create							Set up variables for animating the button.
+	Step							Animate the button when it first appears on screen.
+	Draw							Draws the button, with it's icon.
+	Left Pressed (Mouse)			Change the button image to the "down" image.
+	Left Released (Mouse)			Perform the button action (Next, Quit or Retry).
+	Mouse Leave						Change the button image to the "up" image.
+	Global Left Released (Mouse)	Change the button image to the "up" image.
+	
+
+obj_game_over_lose and obj_game_over_win are the pop-up windows created when the player wins or loses the game. They share events as follows:
+
+	Create				Set up variables.
+	Draw				Draws the notification.
+
+
+obj_game_over_title_lose and obj_game_over_title_win are both created by the game over window objects above. They animate onto the screen to tell
+the player whether they won or lost. They both contain one events:
+
+	Draw				Draws the banner.
+	
+	
+obj_no_valid_matches is created when the player can't move any pieces on the board. It conveys this information to the player and then triggers a board
+reset when they dismiss it. Its events are as follows:
+
+	Create							Set up animation variables.
+	Step							Animate the object onto the screen.
+	Draw							Draws the notification.
+	Global Left Pressed (Mouse)		Set alarm 3 in obj_controller to trigger a board reset, then destroy the instance.
+	
+
+obj_text_popup is created when a match is made to show the current combo to the player. Its events are:
+
+	Create				Initialise its text as "" - this is set to another value afterwards by the object which creates it.
+	Step				Move the object upwards.
+	Draw				Draw the text to the screen.
+
+
+obj_menu_button_mute controls the volume level for the game. It has three events:
+
+	Create					Set up variables related to animation.
+	Step					Animate onto the screen.
+	Left Pressed (Mouse)	Toggle the volume between 0 and 1.
+
+
+obj_menu_button_play and obj_menu_button_quit are the two main menu buttons for the game. They allow the player to play or quit. Their events are similar as
+follows:
+
+	Create							Set up variables.
+	Draw							Draws the button and it's text.
+	Left Pressed (Mouse)			Change the button image to the "down" image.
+	Left Released (Mouse)			Perform the button action (Play or Quit).
+	Mouse Leave						Change the button image to the "up" image.
+	Global Left Released (Mouse)	Change the button image to the "up" image.
+	
+	
+obj_menu_title is the main title logo shown on the menu screen. It also creates the other menu buttons. Its events are as follows:
+
+	Create				Play the main menu music and initialise some variables.
+	Step				Animate itself onto the screen, resize the view in case the player resizes the screen, and create the other menu objects.
+	Draw				Draws the background and the title sprite.
+
+
+
+########## SCRIPTS ##########
+
+
+The script check_board_valid is used by obj_controller between turns to check whether the player is able to make any valid moves or if the board needs to be reset.
+
+check_on_startup is used by obj_matching_piece to make sure it will not create instant matches at the start of the game, nor create a board without any valid matches at
+the start of the game.
+
+screen_resize contains several functions for handling screen resizing for both landscape and portrait orientations. This script, however, is written in GML Code as not
+all built-in functions used in it have Visual counterparts.
+
+text_pop_up creates an instance of obj_text_popup and passes it some text to show. It has three arguments:
+
+	_x			the x position to show the text.
+	_y			the y position to show the text.
+	_string_to_show		the text to show.
+
+
+
+
+########## ROOMS ##########
+
+rm_menu is the first room in the game and contains only the object obj_menu_title, which displays the whole main menu and allows the player to progress to the game.
+
+rm_level_* are the game's levels. They have several layers you will need to use to create your own custom boards. They are as follows:
+
+	UIElements2			An instance layer used by some of the UI / HUD elements in the game. You won't need to edit this for each level, but it needs to exist.
+	
+	UIElements			An instance layer used by some of the UI / HUD elements in the game. You won't need to edit this for each level, but it needs to exist.
+	
+	Pieces				The instance layer on which the matching pieces appear. You do not need to add them manually in the room editor, they are created by
+					the playfield objects when the game is running.
+						
+	Instances			On this instance layer you should place instances of obj_playfield_dark and obj_playfield_light to create your own boards.
+	
+	Tiles				On this instance layer you should place tiles from tileset_board to draw the outline of your own board around the instances you placed on
+					the Instances layer.
+						
+	Blur				This is an effect layer which blurs everything underneath it.
+	
+	Tile_shadow			To create this layer you should duplicate the layer called "Tiles", then under "Filters & Effects" select "Color Tint" and make the color
+					a darker version of the background color. Combined with the "Blur" effect layer above this will create a drop shadow effect for your custom
+					board.
+					
+	Back_Instances			This is where obj_controller lives as that object is responsible for drawing the background for different screen sizes.
+						
+	Background			This is just the background image for the room. Note that this is mostly for room layout convenience. As the background actually
+					shown is dynamic and drawn by obj_contrller on the Back_Instances layer.
+	
+	

@@ -1,0 +1,10 @@
+{
+  "FolderOrderSettings":[],
+  "ResourceOrderSettings":[
+    {"name":"obj_banner_pause","order":1,"path":"objects/obj_banner_pause/obj_banner_pause.yy",},
+    {"name":"seq_game_over_lose","order":2,"path":"sequences/seq_game_over_lose/seq_game_over_lose.yy",},
+    {"name":"seq_game_over_win_level","order":3,"path":"sequences/seq_game_over_win_level/seq_game_over_win_level.yy",},
+    {"name":"seq_game_over_win_template","order":4,"path":"sequences/seq_game_over_win_template/seq_game_over_win_template.yy",},
+    {"name":"seq_no_valid_matches","order":1,"path":"sequences/seq_no_valid_matches/seq_no_valid_matches.yy",},
+  ],
+}

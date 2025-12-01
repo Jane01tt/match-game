@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"check_board_valid",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"check_board_valid",
+  "parent":{
+    "name":"Scripts",
+    "path":"folders/Scripts.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
